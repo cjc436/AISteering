@@ -32,8 +32,8 @@ public class ArriveScenario {
         game.add(new Obstacle(0,0,25,600,Color.GRAY));
         game.add(new Obstacle(775,0,25,600,Color.GRAY));
         // set up the cars and markers:
-        GameObject marker = new Marker(600,300,10, Color.green);
-        GameObject car1 = new Car("graphics/redcar.png",200,300,-Math.PI/2, new ArriveController());
+        GameObject marker = new Marker(600,550,10, Color.green);
+        GameObject car1 = new Car("graphics/redcar.png",300,300,-Math.PI/2, new ArriveController(marker,10));
         game.add(marker);
         game.add(car1);
         GameWindow.newWindow(game);
