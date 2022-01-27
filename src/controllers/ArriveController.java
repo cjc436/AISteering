@@ -29,7 +29,6 @@ public class ArriveController extends Controller {
 
         double[] distanceVector = {target.getX() - carPosX, target.getY() - carPosY};
         double lengthToTarget = lengthOf2DVector(distanceVector);
-
         if (lengthToTarget < targetRadius)
             return new double[]{0.0, 0.0};
         double targetSpeed;
@@ -38,13 +37,14 @@ public class ArriveController extends Controller {
         else
             targetSpeed = car.getMaxSpeed();
         double[] targetVelocity = {(distanceVector[0]/lengthToTarget)*targetSpeed,(distanceVector[1]/lengthToTarget)*targetSpeed};
-        double[] carSpeed = car.getVelocityVector();
-        double[] acceleration = {(targetVelocity[0]-carSpeed[0])/deltaTime,(targetVelocity[1]-carSpeed[1])/deltaTime};
+
+        double[] acceleration = {(targetVelocity[0])/deltaTime,(targetVelocity[1])/deltaTime};
         double accelerationValue = lengthOf2DVector(acceleration);
         if (accelerationValue > maxAcceleration) {
             acceleration[0] = (acceleration[0] / accelerationValue) * maxAcceleration;
             acceleration[1] = (acceleration[1] / accelerationValue) * maxAcceleration;
         }
+
         return acceleration;
     }
 
@@ -60,9 +60,8 @@ public class ArriveController extends Controller {
             double carAngle = subject.getAngle();
             double diffBetweenAngles = SteeringHelper.getDiffBetweenAngles(targetDir,carAngle);
             double absOfDiffOfAngles = Math.abs(diffBetweenAngles);
-            System.out.println(absOfDiffOfAngles);
             if (absOfDiffOfAngles > (3*Math.PI/4))
-                controlVariables[VARIABLE_BRAKE] = 0.1;
+                controlVariables[VARIABLE_BRAKE] = 0.2;
             else
                 controlVariables[VARIABLE_THROTTLE] = accMag;
             if (absOfDiffOfAngles > 1)
