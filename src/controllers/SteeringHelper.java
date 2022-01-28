@@ -1,5 +1,8 @@
 package controllers;
 
+import engine.Car;
+import engine.GameObject;
+
 public class SteeringHelper {
 
     /**
@@ -24,5 +27,22 @@ public class SteeringHelper {
                 diff = diff - twoPi;
         }
         return diff;
+    }
+
+    public static double[] getDirVector(double x1, double y1, double x2, double y2) {
+        double[] dirVector = {x2 - x1, y2 - y1};
+        double dirMag = Math.sqrt((dirVector[0] * dirVector[0]) + (dirVector[1] * dirVector[1]));
+        return new double[]{dirVector[0]/dirMag,dirVector[1]/dirMag};
+    }
+    public static double[] getSeekDirectionVector(Car car, GameObject target) {
+        double carPosX = car.getX();
+        double carPosY = car.getY();
+        return getDirVector(carPosX,carPosY,target.getX(),target.getY());
+    }
+    public static double[] getFleeDirectionVector(Car car, double x2, double y2) {
+        double carPosX = car.getX();
+        double carPosY = car.getY();
+        double[] dirVector = getDirVector(carPosX,carPosY,x2,y2);
+        return new double[]{-dirVector[0],-dirVector[1]};
     }
 }

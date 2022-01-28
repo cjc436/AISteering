@@ -2,6 +2,7 @@ package engine;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -59,6 +60,13 @@ public class Game {
     public GameObject collision(RotatedRectangle r) {
         for(GameObject o2:m_objects) {
             if (o2.collision(r)) return o2;
+        }
+        return null;
+    }
+
+    public GameObject collision(RotatedRectangle r, HashSet<GameObject> ignoredObjects) {
+        for(GameObject o2:m_objects) {
+            if (!ignoredObjects.contains(o2) && o2.collision(r)) return o2;
         }
         return null;
     }

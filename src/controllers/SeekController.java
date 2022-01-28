@@ -17,14 +17,6 @@ public class SeekController extends Controller {
 
     private GameObject target;
 
-    private double[] getSeekDirectionVector(Car car) {
-        double carPosX = car.getX();
-        double carPosY = car.getY();
-
-        double[] distanceVector = {target.getX() - carPosX, target.getY() - carPosY};
-        return distanceVector;
-    }
-
     public SeekController(GameObject target) {
         this.target = target;
     }
@@ -34,7 +26,7 @@ public class SeekController extends Controller {
         controlVariables[VARIABLE_THROTTLE] = 0;
         controlVariables[VARIABLE_BRAKE] = 0;
 
-        double[] distanceToTarget = getSeekDirectionVector(subject);
+        double[] distanceToTarget = SteeringHelper.getSeekDirectionVector(subject,target);
         double targetDir = Math.atan2(distanceToTarget[1],distanceToTarget[0]);
         double carAngle = subject.getAngle();
         double diffBetweenAngles = SteeringHelper.getDiffBetweenAngles(targetDir,carAngle);
@@ -45,7 +37,7 @@ public class SeekController extends Controller {
             controlVariables[VARIABLE_THROTTLE] = 1;
         if (absOfDiffOfAngles > 1)
             diffBetweenAngles /= absOfDiffOfAngles;
-        if (absOfDiffOfAngles < 0.01)
+        if (absOfDiffOfAngles < 0.05)
             diffBetweenAngles = 0;
         controlVariables[VARIABLE_STEERING] = diffBetweenAngles;
     } 

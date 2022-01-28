@@ -19,7 +19,7 @@ public abstract class Controller {
     public static final int VARIABLE_BRAKE = 2;
 
     public static double lengthOf2DVector(double[] vector) {
-        return Math.sqrt(vector[0] * vector[0]) + (vector[1] * vector[1]);
+        return Math.sqrt((vector[0] * vector[0]) + (vector[1] * vector[1]));
     }
     
     public abstract void update(Car subject, Game game, double delta_t, double controlVariables[]);

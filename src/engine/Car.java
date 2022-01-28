@@ -45,6 +45,12 @@ public class Car extends GameObject {
         double y = m_speed*Math.sin(m_alpha);
         return new double[] {x,y};
     }
+
+    public double[] getDirectionVector() {
+        double x = Math.cos(m_alpha);
+        double y = Math.sin(m_alpha);
+        return new double[] {x,y};
+    }
     
     public void update(Game game, double delta_t) {
         double controlVariables[] = {0,0,0};

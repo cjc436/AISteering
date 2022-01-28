@@ -27,6 +27,14 @@ public class RotatedRectangle {
             x = t*cosa + y*sina; 
             y = -t*sina + y*cosa;
         }
+
+        public double getX() {
+            return x;
+        }
+
+        public double getY() {
+            return y;
+        }
     }
     
     public _Vector2D C,S;
