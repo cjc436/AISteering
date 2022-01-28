@@ -11,7 +11,7 @@ import engine.GameObject;
 
 /**
  *
- * @author santi
+ * @author Cristos Criniti
  */
 public class SeekController extends Controller {
 

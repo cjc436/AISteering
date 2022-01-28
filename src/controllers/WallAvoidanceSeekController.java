@@ -14,7 +14,7 @@ import java.util.HashSet;
 
 /**
  *
- * @author santi
+ * @author Cristos Criniti
  */
 public class WallAvoidanceSeekController extends Controller {
 
@@ -25,14 +25,7 @@ public class WallAvoidanceSeekController extends Controller {
     }
 
     private double[] getWallAvoidanceVector(Car car, Game game) {
-        // wall avoidance (flee vector if exists)
-        // avoid straight ahead
         RotatedRectangle carRect = car.getCollisionBox();
-//        RotatedRectangle collisionRect = new RotatedRectangle(carRect.C.getX(),carRect.C.getY(),carRect.S.getX(),carRect.S.getY(),carRect.ang);
-        double[] carDirVector = car.getDirectionVector();
-        double carDirMag = lengthOf2DVector(carDirVector);
-        carDirVector = new double[]{(10 * carDirVector[0])/carDirMag, (10 * carDirVector[1])/carDirMag};
-
         HashSet<GameObject> cars = new HashSet<>();
         cars.add(car);
         cars.add(target);
@@ -40,32 +33,41 @@ public class WallAvoidanceSeekController extends Controller {
         double carAngle = car.getAngle();
         if (car.getSpeed() < 0) {
             carAngle += Math.PI;
-            carDirVector = new double[]{-carDirVector[0],-carDirVector[1]};
         }
 
+        // check for wall 45 degrees to the right
         double angleOfProjection = carAngle + (Math.PI/4);
         for (int i = 1; i < 5; i++) {
-            RotatedRectangle collisionRect = new RotatedRectangle(carRect.C.getX()+(i*carDirVector[0]),carRect.C.getY()+(i*carDirVector[1]),carRect.S.getX(),carRect.S.getY(),angleOfProjection);
+            RotatedRectangle collisionRect = new RotatedRectangle(carRect.C.getX()+(i*20*Math.cos(angleOfProjection)),carRect.C.getY()+(i*20*Math.sin(angleOfProjection)),carRect.S.getX(),carRect.S.getY(),angleOfProjection);
 
             GameObject collision = game.collision(collisionRect,cars);
-//            System.out.println(collisionRect.C.getX());
             if (collision != null) {
-//                System.out.println(collision);
-                double[] dirVector = SteeringHelper.getFleeDirectionVector(car,collisionRect.C.getX(),collisionRect.C.getY());
-//                System.out.println(dirVector[0]);
+                double translatedAngle = carAngle - (Math.PI/2);
+                double[] dirVector = {Math.cos(translatedAngle),Math.sin(translatedAngle)};
                 return dirVector;
             }
         }
-        angleOfProjection = car.getAngle() - (Math.PI/4);
+        // check for wall 45 degrees to the left
+        angleOfProjection = carAngle - (Math.PI/4);
         for (int i = 1; i < 5; i++) {
-            RotatedRectangle collisionRect = new RotatedRectangle(carRect.C.getX()+(i*carDirVector[0]),carRect.C.getY()+(i*carDirVector[1]),carRect.S.getX(),carRect.S.getY(),angleOfProjection);
+            RotatedRectangle collisionRect = new RotatedRectangle(carRect.C.getX()+(i*20*Math.cos(angleOfProjection)),carRect.C.getY()+(i*20*Math.sin(angleOfProjection)),carRect.S.getX(),carRect.S.getY(),angleOfProjection);
 
             GameObject collision = game.collision(collisionRect,cars);
-//            System.out.println(collisionRect.C.getX());
             if (collision != null) {
-//                System.out.println(collision);
-                double[] dirVector = SteeringHelper.getFleeDirectionVector(car,collisionRect.C.getX(),collisionRect.C.getY());
-//                System.out.println(dirVector[0]);
+                double translatedAngle = carAngle + (Math.PI/2);
+                double[] dirVector = {Math.cos(translatedAngle),Math.sin(translatedAngle)};
+                return dirVector;
+            }
+        }
+        // check for wall straight ahead
+        angleOfProjection = carAngle;
+        for (int i = 1; i < 5; i++) {
+            RotatedRectangle collisionRect = new RotatedRectangle(carRect.C.getX()+(i*20*Math.cos(angleOfProjection)),carRect.C.getY()+(i*20*Math.sin(angleOfProjection)),carRect.S.getX(),carRect.S.getY(),angleOfProjection);
+
+            GameObject collision = game.collision(collisionRect,cars);
+            if (collision != null) {
+                double translatedAngle = carAngle + Math.PI;
+                double[] dirVector = {Math.cos(translatedAngle),Math.sin(translatedAngle)};
                 return dirVector;
             }
         }
@@ -79,13 +81,15 @@ public class WallAvoidanceSeekController extends Controller {
 
         // seek vector
         double[] seekVector = SteeringHelper.getSeekDirectionVector(subject,target);
-//        double[] totalVector = SteeringHelper.getSeekDirectionVector(subject,target);
-
+        double wallAvoidanceMultiplier;
+        if (lengthOf2DVector(new double[]{target.getX() - subject.getX(), target.getY() - subject.getY()}) < 40)
+            wallAvoidanceMultiplier = 0;
+        else
+            wallAvoidanceMultiplier = 4;
 
         double[] wallAvoidanceVector = getWallAvoidanceVector(subject,game);
-        System.out.println("0: "+wallAvoidanceVector[0]+", 1: "+wallAvoidanceVector[1]);
 
-        double[] totalVector = {seekVector[0]+(2*wallAvoidanceVector[0]),seekVector[1]+(2*wallAvoidanceVector[1])};
+        double[] totalVector = {seekVector[0]+(wallAvoidanceMultiplier*wallAvoidanceVector[0]),seekVector[1]+(wallAvoidanceMultiplier*wallAvoidanceVector[1])};
 
         double totalDir = Math.atan2(totalVector[1],totalVector[0]);
         double carAngle = subject.getAngle();
